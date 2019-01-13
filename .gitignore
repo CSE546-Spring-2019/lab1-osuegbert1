@@ -1,5 +1,6 @@
 *.vscode
 *.pdf
 *.o
+*.sh
 test/
 count

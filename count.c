@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
   FILE *input, *output;
   unsigned char buffer[BUFFER_SIZE];
   int fileSize = 0, count = 0, itemsRead;
-  int i;
+  int i, bufferOffset, validDataSize;
   char *inputFilename, *searchString, *outputFilename;
   unsigned char searchChar;
   int searchStringLength;
@@ -35,12 +35,25 @@ int main(int argc, char *argv[]) {
 
   searchChar = *searchString & 0xff;
   searchStringLength = strlen(searchString);
-  while ((itemsRead = fread(buffer, 1, BUFFER_SIZE, input)) > 0) {
+  bufferOffset = 0;
+  // read until EOF
+  // use an offset for possible rollover from previous read
+  while ((itemsRead = fread(&buffer[bufferOffset], 1, BUFFER_SIZE - bufferOffset, input)) > 0) {
     fileSize += itemsRead;
-    for (i = 0; i < itemsRead; i++) {
-      if (buffer[i] == searchChar &&
-          !memcmp(&buffer[i], searchString, searchStringLength)) {
-        count++;
+    validDataSize = bufferOffset + itemsRead;
+    bufferOffset = 0;
+    for (i = 0; i < validDataSize; i++) {
+      if (buffer[i] == searchChar) { // check for starting char
+        if (validDataSize - i >= searchStringLength) { // enough buffer for full match
+          if (!memcmp(&buffer[i], searchString, searchStringLength)) {
+            count++;
+          }
+        } else if (!memcmp(&buffer[i], searchString, validDataSize - i)) { // check for possible match that was cut off
+          // move partial match to front of buffer
+          bufferOffset = validDataSize - i;
+          memmove(buffer, &buffer[i], bufferOffset);
+          break;
+        }
       }
     }
   }
