@@ -1,7 +1,7 @@
 #makefile for count.c
 
 CC=gcc
-CGLAGS = -g -Wall
+CFLAGS = -g -Wall
 
 all: count
 
