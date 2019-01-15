@@ -7,8 +7,8 @@
 int main(int argc, char *argv[]) {
   FILE *input, *output;
   unsigned char buffer[BUFFER_SIZE];
-  int fileSize = 0, count = 0, itemsRead;
-  int i, bufferOffset, validDataSize;
+  long fileSize = 0, count = 0;
+  int i, bufferOffset, validDataSize, itemsRead;
   char *inputFilename, *searchString, *outputFilename;
   unsigned char searchChar;
   int searchStringLength;
@@ -58,10 +58,10 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  printf("Size of file is %i\n", fileSize);
-  fprintf(output, "Size of file is %i\n", fileSize);
-  printf("Number of matches = %i\n", count);
-  fprintf(output, "Number of matches = %i\n", count);
+  printf("Size of file is %li\n", fileSize);
+  fprintf(output, "Size of file is %li\n", fileSize);
+  printf("Number of matches = %li\n", count);
+  fprintf(output, "Number of matches = %li\n", count);
 
   // close files
   if ((fclose(input)) != 0) {
